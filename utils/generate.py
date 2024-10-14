@@ -43,6 +43,6 @@ if __name__ == '__main__':
         Circle((-5, +5), 1, color='blue'),
         Circle((+5, -5), 1, color='red'),
         Circle((-5, -5), 1, color='blue'),
-    ], filename=examples_dir / 'five-dots')
+    ], filename=examples_dir / 'five-color-dots')
 
     generate(dots=[], filename=examples_dir / 'no-dots')
