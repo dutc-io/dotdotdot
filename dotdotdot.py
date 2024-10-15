@@ -47,27 +47,44 @@ def classify(path):
 
     img = imread(path, cv2.IMREAD_COLOR)
     dot_colors = {}
-    f = open('classify.json')
-    for line in f.read().strip().strip('{}').strip().splitlines():
-        if not line: continue
-        name, values = line.rstrip(',').split(':')
-        name, values = literal_eval(name.strip()), literal_eval(values.strip())
-        dot_colors[name] = [tuple(x) for x in values]
+    try:
+        f = open('classify.json')
+        for line in f.read().strip().strip('{}').strip().splitlines():
+            if not line: continue
+            name, values = line.rstrip(',').split(':')
+            name, values = literal_eval(name.strip()), literal_eval(values.strip())
+            dot_colors[name] = [tuple(x) for x in values]
+    except:
+        raise f"No such file found!"
 
     circles_by_color = {}
     blur = cv2.medianBlur(img, 7) # hmm, not sure what this does - but the internet told me it helps?
+    # for color, (lower, upper) in dot_colors.items():
+    #     circles = HoughCircles(
+    #         image=blur,
+    #         method=HOUGH_GRADIENT,
+    #         dp=1,
+    #         minDist=50,
+    #         param1=10,
+    #         param2=4,
+    #     )
+    #     circles_by_color[color] = np.round(circles).astype("int")
     for color, (lower, upper) in dot_colors.items():
+        print('debug:', color)
         mask = cv2.inRange(blur, lower, upper)
+        # print('debug:', mask)
         circles = HoughCircles(
             image=mask,
             method=HOUGH_GRADIENT,
             dp=1,
-            # minDist=80,
-            minDist=50,
+            minDist=80,
             param1=20,
             param2=8,
         )
-        circles_by_color[color] = np.round(circles).astype("int")
+        try:
+            circles_by_color[color] = np.round(circles).astype("int")
+        except Exception:
+            circles_by_color[color] = None
 
     for color, dots in circles_by_color.items():
         num = dots.shape[1] if dots is not None else 0
