@@ -55,21 +55,19 @@ def classify(path):
         dot_colors[name] = [tuple(x) for x in values]
 
     circles_by_color = {}
-    blur = cv2.medianBlur(img, 7)
+    blur = cv2.medianBlur(img, 7) # hmm, not sure what this does - but the internet told me it helps?
     for color, (lower, upper) in dot_colors.items():
         mask = cv2.inRange(blur, lower, upper)
         circles = HoughCircles(
             image=mask,
             method=HOUGH_GRADIENT,
             dp=1,
-            minDist=80,
+            # minDist=80,
+            minDist=50,
             param1=20,
             param2=8,
         )
-        if circles is None:
-            circles_by_color[color] = None
-        else:
-            circles_by_color[color] = np.round(circles).astype("int")
+        circles_by_color[color] = np.round(circles).astype("int")
 
     for color, dots in circles_by_color.items():
         num = dots.shape[1] if dots is not None else 0
